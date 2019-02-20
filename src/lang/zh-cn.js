@@ -531,6 +531,7 @@ export default {
         ticketAge:'实时票龄',
         toVote:'投票',
         exceed:'投票数超出票池限制',
-        enterVoteNumber:'请输入投票数量'
+        enterVoteNumber:'请输入投票数量',
+        noBalance:'钱包余额不足，无法进行投票'
     }
 };

@@ -155,7 +155,7 @@
                     }else{
                         this.getBalOrd().then((arr)=>{
                             if(arr.length==0){
-                                this.$message.warning(this.$t('application.noBalance'));
+                                this.$message.warning(this.$t('vote.noBalance'));
                                 return;
                             }else{
                                 this.$router.push({

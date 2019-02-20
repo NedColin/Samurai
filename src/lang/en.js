@@ -487,7 +487,7 @@ export default {
         sortBy4:'Location',
         joinAgain:'Rejoin',
         applyWaiting:'Registration Submission',
-        validatorNode:'Block Rroducers',
+        validatorNode:'Block Producers',
         myValidatorNode:'My Producer',
         cannotBeLess:'The Reduce Amount cannot be less than 10% of Staked',
         inCannotBeLess:'The Increase Amount cannot be less than 10% of the current Staked',
@@ -531,6 +531,7 @@ export default {
         ticketAge:'Ticket Age',
         toVote:'Vote',
         exceed:'Votes exceed the limit of the ticket pool',
-        enterVoteNumber:'Please enter the number of votes'
+        enterVoteNumber:'Please enter the number of votes',
+        noBalance:'Insufficient balance to vote'
     }
 };
