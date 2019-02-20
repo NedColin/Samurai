@@ -1,6 +1,6 @@
 {
     "name": "Samurai",
-    "version": "0.4.1",
+    "version": "0.5.1",
     "author": "www.platon.network<support@platon.network>",
     "description": "Samurai钱包客户端",
     "license": null,
@@ -22,7 +22,7 @@
     },
     "build": {
         "productName": "Samurai",
-        "buildVersion": "0.4.0.1",
+        "buildVersion": "0.5.0.1",
         "appId": "org.simulatedgreg.electron-vue",
         "directories": {
             "output": "dist"
@@ -39,8 +39,8 @@
                 ]
             },
             {
-                "from": "src/services/demo1/",
-                "to": "demo1",
+                "from": "src/services/buildInContract/",
+                "to": "buildInContract",
                 "filter": []
             }
         ],

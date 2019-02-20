@@ -277,7 +277,7 @@
                         { min: 6, message: this.$t('wallet.enterNewPswHint'), trigger: 'blur' }
                         ],
                     pswA:[
-                        { required: true, message: this.$t('wallet.repeatPsw'), trigger: 'blur' },
+                        { required: true, message: this.$t('form.nonRepPsw'), trigger: 'blur' },
                         { validator: this.checkPswA, trigger: 'blur'}
                     ]
                 },
@@ -970,6 +970,9 @@
             background: #D3D8E1;
             border-radius: 0px 4px 4px 0px;
             font-family: "微软雅黑","Helvetica Neue",Helvetica,"PingFang SC","Hiragino Sans GB","Microsoft YaHei","微软雅黑",Arial,sans-serif;
+        }
+        .el-form-item__error{
+            width:300px;
         }
     }
     .el-form-item.is-required .el-form-item__label:before{

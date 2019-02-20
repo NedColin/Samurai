@@ -120,6 +120,8 @@ if(shouldQuit) {
 	app.quit();
 }
 
+app.setPath('userData', path.join(app.getPath('userData'),'..','Samurai data'))
+
 // Electron 会在初始化后并准备
 // 创建浏览器窗口时，调用这个函数。
 // 部分 API 在 ready 事件触发后才能使用。
@@ -158,12 +160,14 @@ ipcMain.on('minimize-window', () => {
 
 //最大化
 ipcMain.on('maximize-window', () => {
+    mainWindow.setResizable(true)
 	mainWindow.maximize()
 });
 
 //还原
 ipcMain.on('orignal-window', () => {
-	mainWindow.unmaximize();
+    mainWindow.unmaximize();
+    mainWindow.setResizable(false)
 	// mainWindow.restore()
 });
 

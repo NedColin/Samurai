@@ -2,10 +2,12 @@
     <div class="validator-node format-style">
         <div class="header">
             <el-select v-model="sortBy" @change="search" :class="[lang=='en'?'enSearch':'']">
-                <el-option v-for="option in options" :label="option.label" :value="option.code"></el-option>
+                <el-option v-for="option in options" :label="option.label" :value="option.code" :key="option.code"></el-option>
             </el-select>
             <span class="icon-search">
-                <el-input :class="[keyword&&!/^\s*$/g.test(keyword)?'input1':'input2',lang=='en'?'width278':'']" v-model="keyword" v-if="showKeyInput" @change="search" @keyup.enter.native="search" :placeholder="$t('application.enterAccount')"></el-input>
+                <el-input :class="[keyword&&!/^\s*$/g.test(keyword)?'input1':'input2',lang=='en'?'width278':'']" v-model="keyword" v-if="showKeyInput" @change="search" @keyup.enter.native="search" :placeholder="$t('application.enterAccount')">
+                    <i slot="append" class="icon-close" @click="clearSearch"></i>
+                </el-input>
                 <i v-if="!showKeyInput" @click="showKeyInput=!showKeyInput"></i>
             </span>
             <el-button class="my-node" @click="gotoMyNote">{{$t('vote.myVote')}}</el-button>
@@ -149,6 +151,7 @@
                 });
                 window.getTicketInfoTimer = setInterval(()=>{
                     this.getTicketInfo(this.nodeList);
+                    this.getPoolRemainder();
                 },5000);
             },
             //获取节点所得选票数
@@ -184,7 +187,7 @@
             //获取票池剩余票数量
             getPoolRemainder(){
                 contractService.platONCall(contractService.getABI(3),contractService.voteContractAddress,'GetPoolRemainder',contractService.voteContractAddress).then((remainder)=>{
-                    this.remainder = (remainder/51200)*100;
+                    this.remainder = ((remainder/51200)*100).toFixed(2);
                 })
             },
             getBlockNumber(){
@@ -295,6 +298,10 @@
                     }
                 });
             },
+            clearSearch(){
+                this.keyword='';
+                this.search();
+            }
         },
         filters:{
             'perc':function(num){
@@ -478,6 +485,13 @@
             height:32px;
             background: url("./images/icon_query.svg") no-repeat left center;
         }
+        .icon-close{
+            width:25px;
+            height:25px;
+            background: url("./images/cancel.png") no-repeat left center;
+            background-size: 10px 10px;
+            cursor: pointer;
+        }
     }
     .no-data-bg{
         padding-top:310px;
@@ -543,6 +557,20 @@
                 .el-input__inner{
                     background: url("./images/icon_query.svg") no-repeat 10px center transparent;
                 }
+            }
+            .el-input-group__append{
+                position: absolute;
+                right: -22px;
+                top: 0;
+                margin:0;
+                background:transparent;
+                border:0px;
+            }
+            .icon-search-close{
+                width:8px;
+                height: 8px;
+                background: url("./images/close.svg") no-repeat center center;
+                cursor: pointer;
             }
         }
     }

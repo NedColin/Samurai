@@ -83,7 +83,7 @@ export default {
         QRCode:'钱包二维码地址',
         // 错误提示
         walletNameRequired:'钱包名称不能为空',
-        walletPswRequired:'钱包密码不能为空',
+        walletPswRequired:'密码不能为空',
         PKRequired:'私钥不能为空',
         NodePKRequired:'节点私钥不能为空',
         NodePKillegal:'非法节点私钥字符',
@@ -129,7 +129,7 @@ export default {
         walletPsw:'钱包密码',
         allWallet:'所有钱包',
         createShareWallet:'新增联名钱包',
-        addShareWallet:'加入钱包',
+        addShareWallet:'添加钱包',
         tip1:'所有普通钱包余额为0，无法创建联名钱包！',
         tip2:'请先创建普通钱包，并转入相应资产',
         incorrectAddress:'接收地址不正确',
@@ -309,7 +309,8 @@ export default {
         wrongPsw:'密码不正确',
         next:'下一步',
         back:'上一步',
-        loading:'加载中...'
+        loading: '加载中...',
+        comfirm:'确定'
     },
     contracts:{
         contracts:'合约',
@@ -498,7 +499,8 @@ export default {
         quitValidatorConf:'确认注销',
         OutOfRange:'减持数量不能超过现有质押数量',
         stakeNull:'减持质押数量不能为空',
-        pendingRedeem:'提取中'
+        pendingRedeem: '提取中',
+        revokePending:'注销操作处理中',
     },
     vote:{
         myVote:'我的投票',
@@ -527,6 +529,8 @@ export default {
         expirationTime:'预计/过期时间',
         currentTickets:'当前得票数',
         ticketAge:'实时票龄',
-        toVote:'投票'
+        toVote:'投票',
+        exceed:'投票数超出票池限制',
+        enterVoteNumber:'请输入投票数量'
     }
 };

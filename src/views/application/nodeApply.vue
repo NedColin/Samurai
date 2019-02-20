@@ -599,7 +599,8 @@
         padding:20px;
         font-size: 12px;
         .step{
-            padding-right:70px;
+            // padding-right:70px;
+            padding: 0 70px 40px 0;
         }
         .label-txt-line{
             display:inline-block;
@@ -679,6 +680,7 @@
             line-height:60px;
             text-align: right;
             border-top:solid 1px #D3D8E1;
+            background: #fff;
             .el-button{
                 margin-right:40px;
             }

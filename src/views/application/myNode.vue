@@ -67,7 +67,7 @@
                                 </li>
                                 <li class="perc-li">
                                     <p>{{$t('vote.ticketAge')}}</p>
-                                    <p><span class="txt">{{epoch}}</span></p>
+                                    <p><span class="txt">{{epoch}}</span>Bs</p>
                                 </li>
                                 <li class="atp-li">
                                     <p>
@@ -158,7 +158,7 @@
                 </div>
                 <div class="modal-btn">
                     <el-button type="cancel" :class="[lang=='zh-cn'?'letterSpace':'']" @click="candidateWithdrawModal=false">{{$t('form.cancel')}}</el-button>
-                    <el-button type="primary" :class="[lang=='zh-cn'?'letterSpace':'']"  @click="handleWidthdraw(2)">{{$t('form.sure')}}</el-button>
+                    <el-button type="primary" :class="[lang=='zh-cn'?'letterSpace':'']"  @click="handleWidthdraw(2)">{{$t('form.comfirm')}}</el-button>
                 </div>
             </div>
         </div>
@@ -183,7 +183,7 @@
                 </div>
                 <div class="modal-btn">
                     <el-button :class="[lang=='zh-cn'?'letterSpace':'']" type="cancel" @click="withdrawPswModal=false">{{$t('form.cancel')}}</el-button>
-                    <el-button :class="[lang=='zh-cn'?'letterSpace':'']" type="primary" :loading="handleLoading" @click="handleCandidateWithdraw">{{$t('form.sure')}}</el-button>
+                    <el-button :class="[lang=='zh-cn'?'letterSpace':'']" type="primary" :loading="handleLoading" @click="handleCandidateWithdraw">{{$t('form.submit')}}</el-button>
                 </div>
             </div>
         </div>
@@ -201,7 +201,7 @@
                 </div>
                 <div class="modal-btn">
                     <el-button :class="[lang=='zh-cn'?'letterSpace':'']" type="cancel" @click="quitModal=false">{{$t('form.cancel')}}</el-button>
-                    <el-button :class="[lang=='zh-cn'?'letterSpace':'']" type="primary" @click="handleWidthdraw(3)">{{$t('form.submit')}}</el-button>
+                    <el-button :class="[lang=='zh-cn'?'letterSpace':'']" type="primary" @click="handleWidthdraw(3)">{{$t('trade.confirm')}}</el-button>
                 </div>
             </div>
         </div>
@@ -573,7 +573,7 @@
                 }
                 keyManager.recover2(this.keyObj,this.psw,'buf',(err,privateKey)=>{
                     if(err){
-                        this.$message.warning(this.$t('form.wrongPsw'));
+                        this.$message.error(this.$t('form.wrongPsw'));
                         return;
                     }
                     this.handleLoading = true;
@@ -616,7 +616,7 @@
             candidateWithdraw(cb){
                 keyManager.recover2(this.keyObj,this.psw,'buf',(err,privateKey)=>{
                     if(err){
-                        this.$message.warning(this.$t('form.wrongPsw'));
+                        this.$message.error(this.$t('form.wrongPsw'));
                     }
                     let params=[this.node.CandidateId];
                     contractService.platONSendTransaction(contractService.getABI(2),contractService.appContractAddress,'CandidateWithdraw',JSON.stringify(params),this.node.Owner,privateKey,this.gas,this.gasPrice,false,false,1003).then((result)=>{

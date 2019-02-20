@@ -317,7 +317,11 @@ const keyManager = {
      */
     recover2(keyObject,password,type,cb){
         // console.warn('recover2--->',keyObject);
-        this._insetRecover(keyObject,password,type,cb)
+        try{
+            this._insetRecover(keyObject,password,type,cb)
+        }catch(e){
+            cb(-100)
+        }
     },
     _insetRecover(keyObject,password,type,cb){
         var keyObjectCrypto, iv, salt, ciphertext, algo;

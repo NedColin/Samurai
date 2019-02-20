@@ -36,7 +36,7 @@
                         </li>
                         <li class="perc-li">
                             <p>{{$t('vote.ticketAge')}}</p>
-                            <p><span class="txt">{{epoch}}Bs</span></p>
+                            <p><span class="txt">{{epoch}}</span>Bs</p>
                         </li>
                         <li  class="atp-li"></li>
                     </ul>

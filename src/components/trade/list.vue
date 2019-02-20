@@ -91,7 +91,7 @@
                             <div>
                                 <span :class="[isMaximized?'':'addr-length','addr','icon-type']" :title="item.from">{{item.from}}</span>
                                 <span class="transfer"></span>
-                                <span v-if="item.type=='contractCreate' || item.type=='createJointWallet'" :class="[isMaximized?'':'cont-length','icon-type','contract-addr']" :title="item.contractAddress">{{item.type=='contractCreate'?$t('trade.contractCreation2'):$t('wallet.createSharedWallet')}}&nbsp;{{item.contractAddress}}</span>
+                                <span v-if="item.type=='contractCreate' || item.type=='createJointWallet'" :class="[isMaximized?'':'cont-length','icon-type','contract-addr']" :title="item.contractAddress">{{item.type=='contractCreate'?$t('trade.contractCreation2'):$t('wallet.createSharedWallet')}}&nbsp;{{item.contractAddress || item.to}}</span>
                                 <span v-else :class="['icon-type',item.type=='transfer'?'addr':'contract-addr',isMaximized?'':'cont-length']" :title="item.to">{{item.to}}</span>
                             </div>
                         </div>

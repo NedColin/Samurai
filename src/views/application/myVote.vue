@@ -79,7 +79,7 @@
             this.init();
         },
         methods: {
-            ...mapActions(['getMyVoteList','getNodeInfo','calculatedIncome','updateNodeName']),
+            ...mapActions(['getMyVoteList','getNodeInfo','calculatedIncome','updateNodeName','getOrd','getBalOrd']),
             init(){
                 this.getMyVoteList().then((ticketIds)=>{
                     console.log('getMyVoteList---',JSON.stringify(ticketIds));
@@ -148,12 +148,26 @@
                 });
             },
             toVote(node){
-                this.$router.push({
-                    path:'/vote',
-                    query:{
-                        nodeId:node.CandidateId,
-                        nodeName:node.nodeName,
-                        icon:node.icon
+                this.getOrd().then((arr)=>{
+                    if(arr.length==0){
+                        this.$message.warning(this.$t('application.noWallet'));
+                        return;
+                    }else{
+                        this.getBalOrd().then((arr)=>{
+                            if(arr.length==0){
+                                this.$message.warning(this.$t('application.noBalance'));
+                                return;
+                            }else{
+                                this.$router.push({
+                                    path:'/vote',
+                                    query:{
+                                        nodeId:node.CandidateId,
+                                        nodeName:node.nodeName,
+                                        icon:node.icon
+                                    }
+                                });
+                            }
+                        });
                     }
                 });
             },

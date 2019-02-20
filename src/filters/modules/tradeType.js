@@ -19,7 +19,7 @@ export default Vue.filter('tradeType', function(value) {
         case 'jointWalletExecution':
             return window.vueVm.$i18n.t('trade.jointWalletExecution');
             break;
-        case 'createValidator':  
+        case 'createValidator':
             return window.vueVm.$i18n.t('trade.createValidator');
             break;
         case 'increaseStake':
@@ -32,6 +32,10 @@ export default Vue.filter('tradeType', function(value) {
         case 'redeemStake':
             //提取质押
             return window.vueVm.$i18n.t('trade.redeemStake');
+            break;
+        case 'vote':
+            //投票
+            return window.vueVm.$i18n.t('vote.toVote');
             break;
     }
 })

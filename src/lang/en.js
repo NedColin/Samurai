@@ -21,7 +21,7 @@ export default {
         balance:'Balance',
         add:'Add Classic wallet',
         createWallet:'Create Wallet',  // key由create改为createWallet
-        importW:'Add Wallet',
+        importW:'Import Wallet',
         send:'Send',
         accept:'Receive',
         copyAddress:'Copy',
@@ -83,14 +83,14 @@ export default {
         QRCode:'Wallet QR Code',
         // 错误提示
         walletNameRequired:'The wallet label is required',
-        walletPswRequired:'The wallet password is required',
+        walletPswRequired:'The password is required',
         PKRequired:'The private key is required',
         NodePKRequired:'Node private key is required',
-        NodePKillegal:'Node private key is illegal',
-        NodeIPRequired:'Node IP is required',
-        NodeIPillegal:'Node IP is illegal',
+        NodePKillegal:'Invalid NodePrivate key',
+        NodeIPRequired:'NodeIP is required',
+        NodeIPillegal:'Invalid NodeIP',
         NodePortRequired:'Node port is required',
-        NodePortillegal:'Node port is illegal',
+        NodePortillegal:'Invalid Node port',
         PKlength:'The private key length must be 64',
         PhraseRequired:'The Mnemonic phrase is required',
         fileRequired:'The keystore file is required',
@@ -153,7 +153,7 @@ export default {
         nonSharedName:'The Joint Wallet label is required',
         nonSharedAddr:'The Joint Wallet address is required',
         inVaildSharedAddr:'Invaild Classic Wallet address',
-        addShareFail:'Failed to add! Address does not exist',
+        addShareFail:'Invaild Joint Wallet address',
         addShareOwnerFail:'Failed to add! The Owner number is 0',
         shareAlreadyExits:'Joint wallet  already exists',
         addShareSuccess:'Add Joint wallet Successfully',
@@ -309,7 +309,8 @@ export default {
         wrongPsw:'Password error',
         next:'Next',
         back:'Back',
-        loading:'Loading...'
+        loading: 'Loading...',
+        comfirm:'Comfirm'
     },
     contracts:{
         contracts:'Contracts',
@@ -498,7 +499,8 @@ export default {
         quitValidatorConf:'Revoke Producer Confirmation',
         OutOfRange:'Reduce Amount cannot exceeds the existing staked amount',
         stakeNull:'Reduce Amount is requried',
-        pendingRedeem:'Pending'
+        pendingRedeem: 'Pending',
+        revokePending:'Producer cancellation in process',
     },
     vote:{
         myVote:'My Vote',
@@ -527,6 +529,8 @@ export default {
         expirationTime:'Estimated/Actual expiration time',
         currentTickets:'Tickets',
         ticketAge:'Ticket Age',
-        toVote:'Vote'
+        toVote:'Vote',
+        exceed:'Votes exceed the limit of the ticket pool',
+        enterVoteNumber:'Please enter the number of votes'
     }
 };

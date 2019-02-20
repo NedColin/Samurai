@@ -22,7 +22,7 @@
                     </el-form-item>
                 </div>
                 <el-form-item :label="$t('wallet.amountSend')">
-                    <el-input v-model.trim="sendTranscation.value" @blur="changeVal" :placeholder="$t('wallet.amountHint')" type="number">
+                    <el-input v-model.trim="sendTranscation.value" @blur="changeVal" :placeholder="$t('wallet.amountHint')" type="number" @input="sendTranscationValueChange" :key="sendTranscationInputKey" v-focus="sendTranscationFocus">
                         <el-button class="append" slot="append" @click="sendAll">ALL</el-button>
                     </el-input>
                     <span class="wantTo">{{$t("wallet.wantTo")}}
@@ -81,7 +81,7 @@
                         <p class="fee">{{$t("wallet.fee")}}<span class="txt"><span class="bold">{{sendTranscation.gas}}</span>&nbsp;Energon</span></p>
                     </div>
                     <p class="inputb">
-                        <el-input class="input-psw" :disabled="sendLoading" :placeholder="$t('wallet.input')+(walletType==1?fromW.account:(owner.account?owner.account:''))+' '+$t('wallet.walletPsw')" type="password" v-model.trim="sendTranscation.psw"></el-input>
+                        <el-input class="input-psw" :disabled="sendLoading" :placeholder="confirmPswPlaceholder" type="password" v-model.trim="sendTranscation.psw"></el-input>
                     </p>
                 </div>
                 <div class="modal-btn">
@@ -133,12 +133,23 @@
                 gasLoading:false,
                 showSelOwners:false,
                 availOwners:[],
-                owner:null
+                owner:null,
+                sendTranscationInputKey:0,
+                sendTranscationFocus:false
             }
 
         },
         computed:{
-            ...mapGetters(['network', 'WalletListGetter','curWallet','chainName','walletType','lang'])
+            ...mapGetters(['network', 'WalletListGetter','curWallet','chainName','walletType','lang']),
+            confirmPswPlaceholder(){
+                const {walletType,fromW,owner}=this,
+                sliceLen=str=>{
+                    if(!str)return ''
+                    return str.length>16?str.slice(0,16)+'...':str
+                }
+
+                return this.$t('wallet.input')+sliceLen(walletType==1?fromW.account:owner.account)+' '+this.$t('wallet.walletPsw')
+            }
         },
         created(){
             this.init();
@@ -411,12 +422,27 @@
             selFee(data){
                 this.gasPrice=data;
                 this.sendTranscation.gas = mathService.mul(this.gas,this.gasPrice);
+            },
+            sendTranscationValueChange(val){
+                if(val.length>20){
+                    const now=val.substring(0,20)
+                    val=now
+                    this.sendTranscation.value=now
+                    this.sendTranscationInputKey=Math.random()
+                    this.sendTranscationFocus=true
+                }
             }
         },
         components:{
             feeSlider
+        },
+        directives: {
+            focus: {
+                inserted: function (el, {value}) {
+                    value&&el.firstElementChild&&el.firstElementChild.focus()
+                }
+            }
         }
-
     }
 </script>
 
@@ -452,6 +478,9 @@
         padding-left: 30px;
         font-size: 12px;
         color: #525768;
+        .el-input-group__append{
+            position:relative;
+        }
         .more{
             color: #24272b;
             i{
