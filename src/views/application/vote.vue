@@ -16,7 +16,7 @@
             <el-select v-model="wallet" @change="selWallet" :style="{pointerEvents:wallet?'auto':'none'}">
                 <el-option v-for="w in wallets"
                            :key="w.address"
-                           :label="w.account.length>16?w.account.slice(0,16)+'...':w.account+'--'+w.balance+'ATP'"
+                           :label="w.account.length>10?w.account.slice(0,10)+'...':w.account+'--'+w.balance+'ATP'"
                            :value="w.address">
                 </el-option>
             </el-select>
@@ -158,18 +158,22 @@
                 this.getGas().then(()=>{
                     this.getTicketPrice();
                     this.getTotal();
-                    if(this.total>this.wallet.balance){
-                        this.$message.warning(this.$t('wallet.cannotTrans2'));
-                    }else{
-                        //获取票池剩余票数量
-                        contractService.platONCall(contractService.getABI(3),contractService.voteContractAddress,'GetPoolRemainder',contractService.voteContractAddress).then((remainder)=>{
-                            if(this.count>remainder){
-                                this.$message.warning(this.$t('vote.exceed'));
-                            }else{
-                                this.showConfirm = true;
-                            }
-                        });
-                    }
+                    contractService.web3.eth.getBalance(this.wallet,(err,data)=>{
+                        if(err) return;
+                        let balance=contractService.web3.fromWei(data.toString(10), 'ether');
+                        if(this.total-balance>0){
+                            this.$message.warning(this.$t('wallet.cannotTrans2'));
+                        }else{
+                            //获取票池剩余票数量
+                            contractService.platONCall(contractService.getABI(3),contractService.voteContractAddress,'GetPoolRemainder',contractService.voteContractAddress).then((remainder)=>{
+                                if(this.count>remainder){
+                                    this.$message.warning(this.$t('vote.exceed'));
+                                }else{
+                                    this.showConfirm = true;
+                                }
+                            });
+                        }
+                    })
                 })
             },
             send(){

@@ -38,7 +38,7 @@
                             <el-form-item prop="admin">
                                 <el-select v-model="nodeForm.Owner">
                                     <el-option v-for="wallet in allWallets"
-                                               :label="(wallet.account.length>16?wallet.account.slice(0,16):wallet.account)+'--'+wallet.balance+' Energon'"
+                                               :label="(wallet.account.length>10?wallet.account.slice(0,10):wallet.account)+'--'+wallet.balance+' Energon'"
                                                :value="wallet.address"></el-option>
                                 </el-select>
                             </el-form-item>
@@ -77,12 +77,12 @@
                     <el-form-item prop="payWallet" :label="$t('application.payWallet')">
                         <el-select v-model="payForm.payWallet" @change="changePayWallet">
                             <el-option v-for="wallet in wallets"
-                                       :label="(wallet.account.length>16?wallet.account.slice(0,16):wallet.account)+'--'+wallet.balance+' Energon'"
+                                       :label="(wallet.account.length>10?wallet.account.slice(0,10):wallet.account)+'--'+wallet.balance+' Energon'"
                                        :value="wallet.address"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item prop="value" :label="$t('application.stakeAmount')">
-                        <el-input v-model.trim="payForm.value" @blur="changeVal" @input="getRanking" :placeholder="$t('application.stakeNumber')" type="number">
+                        <el-input v-model.trim="payForm.value" @blur="changeVal" @input="getRanking" :placeholder="$t('application.stakeNumber')" type="number"  v-focus="payFormInputFocus" :key="payFormInputKey">
                             <el-button slot="append" @click="sendAll">All</el-button>
                         </el-input>
                         <span class="send-txt">{{$t("wallet.wantTo")}} <span class="send-val"><span class="bold">{{payForm.value || 0}}</span>&nbsp;Energon</span></span>
@@ -188,7 +188,9 @@
                 totalPay:0,
                 min:1000000,
                 belowMinimum:false,
-                handleLoading:false
+                handleLoading:false,
+                payFormInputKey:0,
+                payFormInputFocus:false
             }
         },
         computed: {
@@ -349,7 +351,14 @@
                     this.getRanking();
                 });
             },
-            getRanking(){
+            getRanking(val){
+                if(val.length>20){
+                    const now=val.substring(0,20)
+                    val=now
+                    this.payForm.value=now
+                    this.payFormInputKey=Math.random()
+                    this.payFormInputFocus=true
+                }
                 this.valueNull = false;
                 this.belowMinimum = false;
                 let arr = JSON.parse(JSON.stringify(this.depositList));
@@ -365,7 +374,8 @@
                     this.valueNull = true;
                 }else{
                     this.valueNull = false;
-                    this.total = (this.payForm.value-0)+this.payForm.fee;
+                    console.log(this.payForm.value-0,this.payForm.fee);
+                    this.total = this.add(this.payForm.value-0,this.payForm.fee-0);
                     this.getGas().then((gas)=>{
                         console.log('getGas---->',gas);
                         this.gas = gas;
@@ -577,6 +587,13 @@
         },
         components:{
             feeSlider
+        },
+        directives: {
+            focus: {
+                inserted: function (el, {value}) {
+                    value&&el.firstElementChild&&el.firstElementChild.focus()
+                }
+            }
         }
     }
 </script>

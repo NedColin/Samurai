@@ -90,7 +90,7 @@ function createWindow() {
         }
     ]);
 
-    tray.setToolTip('PlatONWallet');
+    tray.setToolTip('Samurai');
     tray.setContextMenu(contextMenu);
     tray.on('double-click', () => { //双击显示
         mainWindow.show();

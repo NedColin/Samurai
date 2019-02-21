@@ -248,7 +248,8 @@
                 city:null,
                 pendingRedeemStake:0,
                 ticketsCount:0,
-                epoch:0
+                epoch:0,
+                withdrawInfosTimer:null
             }
         },
         computed: {
@@ -271,8 +272,8 @@
                             let curNodeApply = quitList[0];
                             this.nodeState = 1;
                             this.node = curNodeApply;
-                            this.pendingStake = 0;
-                            this.unboundStake = 0;
+                            // this.pendingStake = 0;
+                            // this.unboundStake = 0;
                             this.getTicketInfo();
                             clearInterval(this.pendingTradeTimer);
                             this.pendingTradeTimer = setInterval(()=>{
@@ -309,6 +310,8 @@
                                 }else if(n.dieOut){   //节点已被淘汰
                                     this.nodeLoading = false;
                                     this.node = n;
+                                    // this.pendingStake = 0;
+                                    // this.unboundStake = 0;
                                     this.nodeState = 2;
                                     console.log('this.node--2-->',this.node);
                                     this.candidateWithdrawInfos();
@@ -353,7 +356,7 @@
                 })
                 contractService.platONCall(contractService.getABI(3),contractService.voteContractAddress,'GetCandidateEpoch',this.node.Owner,[this.node.CandidateId]).then((epoch)=>{
                     console.log('epoch----',epoch);
-                    this.epoch = epoch;
+                    this.epoch = epoch=='0x'?0:epoch;
                 })
             },
             getRecuceDetail(){
@@ -572,7 +575,10 @@
                     tradeType = 1003;
                 }
                 keyManager.recover2(this.keyObj,this.psw,'buf',(err,privateKey)=>{
-                    if(err){
+                    if(err==-100){
+                        this.$message.warning(this.$t('wallet.invalidSignatures'));
+                        return;
+                    }else if(err){
                         this.$message.error(this.$t('form.wrongPsw'));
                         return;
                     }
@@ -646,6 +652,7 @@
                 })
             },
             candidateWithdrawInfos(){
+                let _this = this;
                 function toObj(str) {
                     if (!str || str == '0x') return []
                     let result
@@ -665,29 +672,39 @@
                         return result
                     }
                 }
-                console.log('CandidateId',this.node.CandidateId);
-                console.log('Owner',this.node.Owner);
-                contractService.platONCall(contractService.getABI(2),contractService.appContractAddress,'CandidateWithdrawInfos',this.node.Owner,[this.node.CandidateId]).then((data)=>{
-                    console.log('CandidateWithdrawInfos---',data);
-                    this.withdrawInfos = toObj(data).Infos;
-                    console.log('this.withdrawInfos-------',this.withdrawInfos,this.pendingReduce);
-                    contractService.web3.eth.getBlockNumber((err,blockNumber)=>{
-                        console.log('blockNumber-------',blockNumber);
-                        if(err) return;
-                        this.pendingStake = this.pendingReduce;
-                        this.unboundStake = 0;
-                        this.withdrawInfos.forEach((item)=>{
-                            item.Balance = contractService.web3.fromWei(item.Balance,"ether");
-                            if(blockNumber - item.LockNumber > item.LockBlockCycle){
-                                this.unboundStake+=(item.Balance-0);
-                            }else{
-                                this.pendingStake+=(item.Balance-0);
+                function getData(){
+                    contractService.platONCall(contractService.getABI(2),contractService.appContractAddress,'CandidateWithdrawInfos',_this.node.Owner,[_this.node.CandidateId]).then((data)=>{
+                        _this.withdrawInfos = toObj(data).Infos;
+                        console.log('_this.withdrawInfos-------',_this.withdrawInfos,_this.pendingReduce);
+                        if(_this.nodeState==1 || _this.nodeState==2){
+                            if(_this.withdrawInfos.length==0){
+                                clearInterval(_this.withdrawInfosTimer);
                             }
-                        })
-                    });
+                        }
+                        contractService.web3.eth.getBlockNumber((err,blockNumber)=>{
+                            if(err) return;
+                            _this.pendingStake = _this.pendingReduce;
+                            _this.unboundStake = 0;
+                            _this.withdrawInfos.forEach((item)=>{
+                                item.Balance = contractService.web3.fromWei(item.Balance,"ether");
+                                if(blockNumber - item.LockNumber > item.LockBlockCycle){
+                                    _this.unboundStake+=(item.Balance-0);
+                                }else{
+                                    _this.pendingStake+=(item.Balance-0);
+                                }
+                            })
+                        });
 
-                })
-
+                    })
+                }
+                if(this.nodeState==1 || this.nodeState==2){
+                    clearInterval(this.withdrawInfosTimer);
+                    this.withdrawInfosTimer = setInterval(function(){
+                        getData();
+                    },1000)
+                }else{
+                    getData();
+                }
             },
             openNet(){
                 const shell = require('electron').shell;
@@ -712,7 +729,11 @@
             if(this.getMyNodeTimer){
                 clearInterval(this.getMyNodeTimer);
                 this.getMyNodeTimer = null;
-            }
+            };
+             if(this.withdrawInfosTimer){
+                 clearInterval(this.withdrawInfosTimer);
+                 this.withdrawInfosTimer = null;
+             }
         },
     }
 </script>

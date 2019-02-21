@@ -1,6 +1,6 @@
 {
     "name": "Samurai",
-    "version": "0.5.1",
+    "version": "0.5.2",
     "author": "www.platon.network<support@platon.network>",
     "description": "Samurai钱包客户端",
     "license": null,
@@ -22,7 +22,7 @@
     },
     "build": {
         "productName": "Samurai",
-        "buildVersion": "0.5.0.1",
+        "buildVersion": "0.5.0.2",
         "appId": "org.simulatedgreg.electron-vue",
         "directories": {
             "output": "dist"
@@ -145,7 +145,7 @@
         "electron": "^3.1.0",
         "electron-builder": "^20.38.4",
         "electron-debug": "^1.4.0",
-        "electron-devtools-installer": "^2.0.1",
+        "electron-devtools-installer": "^2.2.4",
         "extract-text-webpack-plugin": "^2.0.0-beta.4",
         "file-loader": "^0.11.1",
         "html-webpack-plugin": "^2.30.1",

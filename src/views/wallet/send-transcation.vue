@@ -11,7 +11,7 @@
                             <el-option
                                     v-for="item in wallets"
                                     :key="item.address"
-                                    :label="(item.account.length>16?item.account.slice(0,16)+'...':item.account)+'--'+item.balance+'Energon'"
+                                    :label="(item.account.length>10?item.account.slice(0,10)+'...':item.account)+'--'+item.balance+'Energon'"
                                     :value="item.address">
                             </el-option>
                         </el-select>

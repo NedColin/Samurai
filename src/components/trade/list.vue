@@ -814,7 +814,6 @@
     .no-data{
         margin-top:100px;
         padding-left:14px;
-        text-align: center;
         font-size: 12px;
         color: #9EABBE;
         letter-spacing: 0.43px;
@@ -842,7 +841,6 @@
     }
     .no-data{
         margin-top:150px;
-        text-align: center;
         font-size: 12px;
         color: #9EABBE;
     }
