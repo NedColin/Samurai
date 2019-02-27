@@ -521,31 +521,20 @@ export const WalletAction = {
         })
     },
     //获取某联名钱包的 还未上链的 执行联名钱包交易
-    getPendingExecution({state,commit,rootState,dispatch},walletAddress){
+    getPendingExecution({state,commit,rootState,dispatch},trade){
         return new Promise((resolve, reject)=>{
+            let walletAddress = trade.from,
+                txId = trade.id;
             dispatch('getOrdTradeList').then((tradeList)=> {
-                console.log('tradeList---->',tradeList);
                 let arr = tradeList.filter((item) => {
-                    return item.type=='jointWalletExecution' && item.to==walletAddress;
+                    return item.type=='jointWalletExecution' && item.to==walletAddress && item.txId==txId;
                 });
-                console.log('arr---->',arr);
                 if(arr && arr.length>0){
                     arr.sort((a,b)=>{
                         return b.tradeTime - a.tradeTime;
                     });
                     let lastObj = arr[0];
-                    console.log('--lastObj-->',lastObj);
-                    contractService.web3.eth.getTransactionReceipt(lastObj.hash,(err,data)=>{
-                        console.log('err---data---',err,data);
-                        if(err){
-                            resolve(null)
-                        }
-                        if(!data){
-                            resolve(lastObj)
-                        }else{
-                            resolve(null)
-                        }
-                    })
+                    resolve(lastObj);
                 }else{
                     resolve(null)
                 }

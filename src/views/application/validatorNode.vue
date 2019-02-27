@@ -171,8 +171,18 @@
                 });
                 window.getTicketInfoTimer = setInterval(()=>{
                     this.getTicketInfo(this.nodeList);
+                    this.getVerifiers();
                     this.getPoolRemainder();
                 },5000);
+            },
+            //查看节点是否成为验证节点
+            getVerifiers(){
+                this.verifiersList().then((verList)=> {
+                    this.nodeList.forEach((item, index) => {
+                        item.verNode = (verList.indexOf(item.CandidateId) !== -1);
+                        this.$set(this.nodeList, index, item);
+                    })
+                })
             },
             //获取节点所得选票数
             getTicketInfo(list){

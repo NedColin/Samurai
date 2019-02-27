@@ -378,13 +378,11 @@
                             this.$message.error(this.$t('form.wrongPsw'));
                             return;
                         }
-                        console.log('recover--->',data);
                         let priKey = data;
                         this.sendLoading = true;
                         contractService.platONSendTransaction(contractService.getABI(1),this.fromW.address,'submitTransaction',JSON.stringify(param1),this.owner.address,priKey,false,false,false,true).then((data)=>{
-                            console.log('submitTransaction----->',data);
+                            let txId = (data.result&&data.result.length>0)?data.result[0]:null;
                             contractService.platONSendTransaction(contractService.getABI(1),this.fromW.address,'confirmTransaction',JSON.stringify([data.result[0]]),this.owner.address,priKey,false,false,false).then((data1)=>{
-                                console.log('confirmTransaction------>',data1);
                                 let tradeObj1={
                                     tradeTime:new Date().getTime(),
                                     hash:data1.hash,
@@ -393,16 +391,15 @@
                                     fromAccount:this.owner.account,
                                     from:this.owner.address,
                                     to:this.fromW.address,
+                                    txId:txId,
                                     type:'jointWalletExecution',
                                     state:0
                                 };
-                                console.log('confirmTransaction-----tradeObj---->',tradeObj1);
                                 this.saveTractRecord(tradeObj1).then(()=>{
                                     this.sendLoading = false;
                                     this.showConfirm = false;
                                     this.$router.push('/o-wallet-share-detail')
                                 });
-                                console.log('confirmTransaction---->',data1);
                             }).catch((e)=>{
                                 this.sendLoading = false;
                                 this.$message.error(this.$t('wallet.transactionFailed'));

@@ -445,14 +445,12 @@
                 this.submitting = false;
                 this.availOwners=[];
                 if(trade.availOwners.length>0){
-                    this.getPendingExecution(trade.from).then((pendingTxs)=>{
+                    this.getPendingExecution(trade).then((pendingTxs)=>{
                         console.log('pendingTxs--->',pendingTxs);
                         if(pendingTxs){
-                            console.log('come in');
                             trade.availOwners = trade.availOwners.filter((avail)=>{
                                 return avail.address!==pendingTxs.from;
                             });
-                            console.log(' trade.availOwners', trade.availOwners);
                         }
                         if(trade.availOwners.length>0){
                             this.availOwners = trade.availOwners;
@@ -522,6 +520,7 @@
                                     fromAccount:this.owner.account,
                                     from:this.owner.address,
                                     to:this.trade.from,
+                                    txId:this.trade.id,
                                     type:'jointWalletExecution',
                                     state:0
                                 };
