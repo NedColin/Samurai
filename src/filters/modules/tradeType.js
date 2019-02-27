@@ -4,25 +4,25 @@ import Vue from 'vue'
 // 注册
 export default Vue.filter('tradeType', function(value) {
     switch(value){
-        case 'transfer':
+        case 'transfer':   //发送交易
             return window.vueVm.$i18n.t('trade.sent');
             break;
-        case 'contractCreate':
+        case 'contractCreate':    //部署合约
             return window.vueVm.$i18n.t('trade.contractCreation');
             break;
-        case 'contractExecution':
+        case 'contractExecution':   //合约执行
             return window.vueVm.$i18n.t('trade.contractExecution');
             break;
-        case 'createJointWallet':
+        case 'createJointWallet':   //创建联名钱包
             return window.vueVm.$i18n.t('wallet.createSharedWallet');
             break;
-        case 'jointWalletExecution':
+        case 'jointWalletExecution':  //执行联名钱包
             return window.vueVm.$i18n.t('trade.jointWalletExecution');
             break;
-        case 'createValidator':
+        case 'createValidator': //注册共识节点
             return window.vueVm.$i18n.t('trade.createValidator');
             break;
-        case 'increaseStake':
+        case 'increaseStake':  //增加质押
             return window.vueVm.$i18n.t('trade.increaseStake');
             break;
         case 'reduceStake':  //减持质押

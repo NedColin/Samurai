@@ -86,7 +86,7 @@
                 </div>
                 <div class="modal-btn">
                     <el-button :class="[lang=='en'?'':'letterSpace']" @click="showConfirm=false" :disabled="sendLoading">{{$t("form.cancel")}}</el-button>
-                    <el-button :class="[lang=='en'?'':'letterSpace','subBtn']" @click="send" type="primary" :loading="sendLoading">{{$t("form.submit")}}</el-button>
+                    <el-button :class="[lang=='en'?'':'letterSpace','subBtn']" @click="send" type="primary" :loading="sendLoading">{{sendLoading?$t('form.submiting'):$t("form.submit")}}</el-button>
                 </div>
             </div>
         </div>
@@ -250,6 +250,7 @@
                 contractService.web3.eth.getBalance(this.fromW.address,(err,data)=>{
                     let balance=contractService.web3.fromWei(data.toString(10), 'ether');
                     console.log('sendAll',balance,this.walletType,data,balance)
+                    this.init();
                     if(this.walletType==1){
                         this.sendTranscation.value = mathService.sub(balance,this.sendTranscation.gas);
                     }else{
@@ -296,8 +297,14 @@
                                     this.$set(this.availOwners,index,item)
                                 });
                             });
-                            this.showSelOwners = true;
                             this.availOwners = avail;
+                            if(this.availOwners.length==1){
+                                this.owner = this.availOwners[0];
+                                this.showSelOwners = false;
+                                this.showConfirm = true;
+                            }else{
+                                this.showSelOwners = true;
+                            }
                         }
                     });
                 }
@@ -376,41 +383,29 @@
                         this.sendLoading = true;
                         contractService.platONSendTransaction(contractService.getABI(1),this.fromW.address,'submitTransaction',JSON.stringify(param1),this.owner.address,priKey,false,false,false,true).then((data)=>{
                             console.log('submitTransaction----->',data);
-                            let tradeObj={
-                                tradeTime:new Date().getTime(),
-                                hash:data.hash,
-                                value:contractService.web3.fromWei(param.value,"ether"),
-                                gasPrice:this.gasPrice,
-                                fromAccount:this.fromW.account,
-                                from:this.fromW.address,
-                                type:'jointWalletExecution',
-                                state:1
-                            };
-                            console.log('submitTransaction-----tradeObj---->',tradeObj);
-                            this.saveTractRecord(tradeObj).then(()=>{
-                                contractService.platONSendTransaction(contractService.getABI(1),this.fromW.address,'confirmTransaction',JSON.stringify([data.result[0]]),this.owner.address,priKey,false,false,false).then((data1)=>{
-                                    console.log('confirmTransaction------>',data1);
-                                    let tradeObj1={
-                                        tradeTime:new Date().getTime(),
-                                        hash:data1.hash,
-                                        value:0,
-                                        gasPrice:this.gasPrice,
-                                        fromAccount:this.owner.account,
-                                        from:this.owner.address,
-                                        type:'jointWalletExecution',
-                                        state:0
-                                    };
-                                    console.log('confirmTransaction-----tradeObj---->',tradeObj1);
-                                    this.saveTractRecord(tradeObj1).then(()=>{
-                                        this.sendLoading = false;
-                                        this.showConfirm = false;
-                                        this.$router.push('/o-wallet-share-detail')
-                                    });
-                                    console.log('confirmTransaction---->',data1);
-                                }).catch((e)=>{
+                            contractService.platONSendTransaction(contractService.getABI(1),this.fromW.address,'confirmTransaction',JSON.stringify([data.result[0]]),this.owner.address,priKey,false,false,false).then((data1)=>{
+                                console.log('confirmTransaction------>',data1);
+                                let tradeObj1={
+                                    tradeTime:new Date().getTime(),
+                                    hash:data1.hash,
+                                    value:0,
+                                    gasPrice:this.gasPrice,
+                                    fromAccount:this.owner.account,
+                                    from:this.owner.address,
+                                    to:this.fromW.address,
+                                    type:'jointWalletExecution',
+                                    state:0
+                                };
+                                console.log('confirmTransaction-----tradeObj---->',tradeObj1);
+                                this.saveTractRecord(tradeObj1).then(()=>{
                                     this.sendLoading = false;
-                                    this.$message.error(this.$t('wallet.transactionFailed'));
+                                    this.showConfirm = false;
+                                    this.$router.push('/o-wallet-share-detail')
                                 });
+                                console.log('confirmTransaction---->',data1);
+                            }).catch((e)=>{
+                                this.sendLoading = false;
+                                this.$message.error(this.$t('wallet.transactionFailed'));
                             });
                         }).catch((e)=>{
                             this.sendLoading = false;

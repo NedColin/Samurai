@@ -203,23 +203,7 @@
         },
         mounted(){
             let _this = this;
-            this.getBalOrd().then((list)=>{
-                this.wallets = list;
-            });
-            this.getOrd().then((arr)=>{
-                this.allWallets = arr;
-                this.allWallets.forEach((wallet,index)=>{
-                    contractService.web3.eth.getBalance(wallet.address,(err,data)=>{
-                        if(err) throw err;
-                        let balance=contractService.web3.fromWei(data.toString(10), 'ether');
-                        wallet.balance = (Math.floor(Number(balance) * 100) / 100).toFixed(2);
-                        _this.$set(_this.allWallets,index,wallet)
-                    })
-                });
-                if((!this.joinNode || JSON.stringify(this.joinNode)=='{}') && arr.length>0){
-                    this.nodeForm.Owner = arr[0].address
-                }
-            });
+            this.initWallets();
             if(this.joinNode && JSON.stringify(this.joinNode)!=='{}'){
                 this.nodeForm.name = this.joinNode.Extra.nodeName;
                 this.nodeForm.host = this.joinNode.Host+':'+this.joinNode.Port;
@@ -330,6 +314,26 @@
                     this.payForm.fee = mathService.mul(this.gas,this.gasPrice);
                 }
             },
+            initWallets(){
+                let _this = this;
+                this.getBalOrd().then((list)=>{
+                    this.wallets = list;
+                });
+                this.getOrd().then((arr)=>{
+                    this.allWallets = arr;
+                    this.allWallets.forEach((wallet,index)=>{
+                        contractService.web3.eth.getBalance(wallet.address,(err,data)=>{
+                            if(err) throw err;
+                            let balance=contractService.web3.fromWei(data.toString(10), 'ether');
+                            wallet.balance = (Math.floor(Number(balance) * 100) / 100).toFixed(2);
+                            _this.$set(_this.allWallets,index,wallet)
+                        })
+                    });
+                    if((!this.joinNode || JSON.stringify(this.joinNode)=='{}') && arr.length>0){
+                        this.nodeForm.Owner = arr[0].address
+                    }
+                });
+            },
             //检验文件
             validateFile(fileObj) {
                 let fileSize = fileObj.size;
@@ -349,10 +353,11 @@
                     this.payForm.value = balance - this.payForm.fee;
                     this.total = (this.payForm.value-0)+this.payForm.fee;
                     this.getRanking();
+                    this.initWallets();
                 });
             },
             getRanking(val){
-                if(val.length>20){
+                if(val && val.length>20){
                     const now=val.substring(0,20)
                     val=now
                     this.payForm.value=now

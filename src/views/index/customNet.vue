@@ -453,7 +453,6 @@
             saveJson(jsonData){
                 let type = 'custom';
                 return new Promise((resolve, reject)=>{
-                    // console.log('path',`${Settings.userDataPath}net_custom/cbft.json`,fs.existsSync(`${Settings.userDataPath}net_custom/cbft.json`));
                     let filePath = path.join(`${Settings.userDataPath}net_${type}`,`${this.net.name}.json`);
                     console.log('filePath---',Settings.userDataPath,filePath);
                     fs.writeFile(filePath, JSON.stringify(jsonData), (err) => {
@@ -475,8 +474,8 @@
                 if(!fs.existsSync(path.join(basePath, `chain/${this.net.name}`))){
                     //创建链目录
                     fs.mkdirSync(path.join(basePath, `chain/${this.net.name}`));
-                    // let cbftJSON = require("../../../static/json/cbft.json");
-                    // fs.writeFileSync(`${basePath}/chain/${this.net.name}/cbft.json`,JSON.stringify(cbftJSON))
+                    let cbftJSON = require("../../../static/json/cbft.json");
+                    fs.writeFileSync(`${basePath}/chain/${this.net.name}/cbft.json`,JSON.stringify(cbftJSON))
                 }
                 if(!fs.existsSync(path.join(basePath, `chain/${this.net.name}/keystore`))){
                     //创建钱包存储目录并保存钱包

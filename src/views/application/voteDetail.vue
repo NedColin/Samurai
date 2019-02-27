@@ -5,11 +5,11 @@
                 <tr :style="{lineHeight:lang=='en'?'19px':'37px'}">
                     <th width="12%">{{$t('vote.votingTime')}}</th>
                     <th width="15%">{{$t('vote.vaildTicket')}}</th>
-                    <th width="8%">{{$t('vote.ticketPrice')}}</th>
-                    <th width="15%">{{$t('vote.voteStaked1')}}</th>
-                    <th width="10%">{{$t('vote.Profit')}}</th>
+                    <th width="9%">{{$t('vote.ticketPrice')}}</th>
+                    <th width="20%">{{$t('vote.voteStaked1')}}</th>
+                    <!--<th width="10%">{{$t('vote.Profit')}}</th>-->
                     <th width="28%">{{$t('vote.votingWallet')}}</th>
-                    <th width="12%">{{$t('vote.expirationTime')}}</th>
+                    <th width="16%">{{$t('vote.expirationTime')}}</th>
                 </tr>
             </thead>
             <tbody>
@@ -17,10 +17,10 @@
                     <td>
                         <span class="time" :style="{width:isMaximized?'58px':'108px'}">{{vote.createTime | FormatDate}}</span>
                     </td>
-                    <td>{{vote.validVote}}/{{vote.invalidVote}}</td>
+                    <td>{{vote.validVote*vote.ticketPrice}}/{{vote.invalidVote*vote.ticketPrice}}</td>
                     <td>{{vote.ticketPrice}}</td>
                     <td>{{vote.locked}}/{{vote.Released}}</td>
-                    <td>{{vote.income?vote.income:'—'}}</td>
+                    <!--<td>{{vote.income?vote.income:'—'}}</td>-->
                     <td>
                         <span class="vote-wallet" :style="{width:isMaximized?'183px':'383px'}">{{isMaximized?vote.voteWalletTxt:vote.voteWallet}}({{vote.voteWalletAccount}})</span>
                     </td>
@@ -39,6 +39,7 @@
 <script>
     import contractService from '@/services/contract-servies';
     import {mapGetters, mapActions} from 'vuex'
+    import mathService from '@/services/math';
 
     export default {
         name: 'voteDetail',
@@ -90,20 +91,12 @@
                             obj.locked+=contractService.web3.fromWei(sItem.Deposit,"ether")-0;
                         }else{
                             obj.invalidVote++;
-                            obj.Released = contractService.web3.fromWei(sItem.Deposit,"ether")-0;
+                            obj.Released += contractService.web3.fromWei(sItem.Deposit,"ether")-0;
                         }
                         if(sItem.State==2){
                             this.calculatedIncome().then((i)=>{
-                                obj.income = obj.income + (contractService.web3.fromWei(i,"ether")-0);
+                                obj.income = mathService.add(obj.income ,(contractService.web3.fromWei(i,"ether")-0));
                             });
-                        }
-                        if(sItem.RBlockNumber){
-                            contractService.web3.eth.getBlock(sItem.RBlockNumber,(err,blockData)=>{
-                                if(err) return;
-                                if(blockData){
-                                    obj.expireTime = blockData.timestamp;
-                                }
-                            })
                         }
                     });
                     //同一次投票的票价、投票钱包、投票时所在块高 是一样的，所以取第一个元素的值即可
@@ -121,8 +114,24 @@
                             obj.createTime = blockData.timestamp;
                             obj.estimatedExpirTime = this.estimatedExpirTime(obj.createTime);
                         }
-                        voteArr.push(obj);
-                        this.voteRecord = voteArr;
+                        if(obj.validVote==0 && obj.invalidVote!==0){
+                            let expireList = JSON.parse(JSON.stringify(item));
+                            expireList.sort((a,b)=>{
+                                return b.RBlockNumber -a.RBlockNumber
+                            });
+                            let lastExpire = expireList[0];
+                            contractService.web3.eth.getBlock(lastExpire.RBlockNumber,(err,blockData)=>{
+                                if(err) return;
+                                if(blockData){
+                                    obj.expireTime = blockData.timestamp;
+                                    voteArr.push(obj);
+                                    this.voteRecord = voteArr;
+                                }
+                            })
+                        }else{
+                            voteArr.push(obj);
+                            this.voteRecord = voteArr;
+                        }
                     })
                 })
             },

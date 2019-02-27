@@ -122,7 +122,7 @@ export default {
         advance:'ADVANCED OPTIONS',
         advanceHint:'You can add extra data to send along with your transaction. If you don \'t know what this is then don \'t touch it or bad things may happen.',
         total:'TOTAL',
-        sendTransaction:'send Transaction',
+        sendTransaction:'Send Transaction',
         amount:'Amount',
         fee:'Fee',
         input:'',
@@ -300,7 +300,8 @@ export default {
         nonPsw:'The Password is required',
         create:'Create',
         cancel:'Cancel',
-        submit:'Submit', // add
+        submit: 'Submit', // add
+        submiting:'Submiting', // add
         sure:'Ok',
         nonOldPsw:'The old password is required',
         less6:'The password must be at least 6 characters',
@@ -357,6 +358,9 @@ export default {
         inputFormat:'The format of sending quantity input is wrong, please input again',
         deployFail:'Create Contract Failed',
         file:'file',
+        executeType:'Execute Type',
+        ordTx:'Ordinary Tx',
+        mpcTx:'MPC Compute Tx(for Privacy Contract)',
         createCont:{
             creatCont:'Creat Contract',
             amount:'Amount',
@@ -523,7 +527,7 @@ export default {
         votingRecord:'Voting Record',
         addVote:'Vote',
         voteDetail:'Detail',
-        noData:'no data',
+        noData:'No voting record',
         votingTime:'Voting time',
         voteStaked1:'Vote Staked/Unstaked',
         expirationTime:'Estimated/Actual expiration time',

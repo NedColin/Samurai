@@ -300,7 +300,8 @@ export default {
         nonPsw:'密码不能为空',
         create:'创建',
         cancel:'取消',
-        submit:'提交', // add
+        submit: '提交', // add
+        submiting:'提交', // add
         sure:'确定',
         nonOldPsw:'原密码不能为空',
         less6:'密码至少6个字符',
@@ -357,6 +358,9 @@ export default {
         inputFormat:'发送数量输入格式有误，请重新输入',
         deployFail:'部署合约失败',
         file:'文件',
+        executeType:'交易类型',
+        ordTx:'普通交易',
+        mpcTx:'MPC计算交易(限MPC隐私合约)',
         createCont:{
             creatCont:'创建合约',
             amount:'数量',

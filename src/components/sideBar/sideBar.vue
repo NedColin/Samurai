@@ -86,11 +86,13 @@
             handleSelect(key) {
                 if(key==8 && this.lang=='zh-cn'){
                     // 中文wiki
-                    this.openUrl('https://github.com/PlatONnetwork/wiki/wiki/%5BChinese-Simplified%5D-Samurai-%E9%92%B1%E5%8C%85')
+                    // this.openUrl('https://github.com/PlatONnetwork/wiki/wiki/%5BChinese-Simplified%5D-Samurai-%E9%92%B1%E5%8C%85')
+                    this.openUrl('https://developer.platon.network/#/?lang=zh')
                 }
                 else if(key==8 && this.lang=='en'){
                     // 英文文wiki
-                    this.openUrl('https://github.com/PlatONnetwork/wiki/wiki/%5BEnglish%5D-Samurai-Wallet')
+                    // this.openUrl('https://github.com/PlatONnetwork/wiki/wiki/%5BEnglish%5D-Samurai-Wallet')
+                    this.openUrl('https://developer.platon.network/#/?lang=en')
                 }
             },
             openUrl(url){

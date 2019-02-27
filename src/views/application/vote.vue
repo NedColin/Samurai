@@ -16,7 +16,7 @@
             <el-select v-model="wallet" @change="selWallet" :style="{pointerEvents:wallet?'auto':'none'}">
                 <el-option v-for="w in wallets"
                            :key="w.address"
-                           :label="w.account.length>10?w.account.slice(0,10)+'...':w.account+'--'+w.balance+'ATP'"
+                           :label="w.account.length>10?w.account.slice(0,10)+'...':w.account+'--'+w.balance+' Energon'"
                            :value="w.address">
                 </el-option>
             </el-select>
@@ -29,7 +29,7 @@
             </p>
         </div>
         <p class="btn-box">
-            <span class="bold">{{$t('vote.total')}}:{{total}}ATP</span>
+            <span class="bold">{{$t('vote.total')}}:{{total}} Energon</span>
             <span class="ticket-price">({{$t('vote.ticketPrice')}}:{{price}} Energon)</span>
             <span class="btns">
                 <el-button :class="[lang=='en'?'':'letterSpace','cancel']" @click="back">{{$t("form.cancel")}}</el-button>
@@ -45,10 +45,10 @@
                 </div>
                 <div class="modal-content">
                     <div class="confirm-content">
-                        <p>{{$t("wallet.amount")}}<span class="txt">{{total}}ATP</span></p>
+                        <p>{{$t("wallet.amount")}}<span class="txt">{{total}} Energon</span></p>
                         <p>From<span class="txt">{{keyObj.address}}</span></p>
                         <p>To<span class="txt contract-addr">{{voteContractAddress}}</span></p>
-                        <p>{{$t("wallet.fee")}}<span class="txt">{{fee}}ATP</span></p>
+                        <p>{{$t("wallet.fee")}}<span class="txt">{{fee}} Energon</span></p>
                     </div>
                     <p class="inputb">
                         <el-input :placeholder="$t('wallet.input')+keyObj.account+' '+$t('wallet.walletPsw')" type="password" v-model.trim="psw" :disabled="handleLoading"></el-input>

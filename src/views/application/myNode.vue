@@ -1,13 +1,13 @@
 <template>
     <div class="node-detail format-style">
         <div class="my-node-content">
-            <div class="no-result" v-if="!node || JSON.stringify(node)=='{}'">
+            <div class="no-result" v-if="loadCompolete && (!node || JSON.stringify(node)=='{}')">
                 {{$t('application.noResult')}}
                 <p class="btn-box">
                     <el-button @click="nodeQuery">{{$t('application.apply')}}</el-button>
                 </p>
             </div>
-            <div v-else style="height: 100%">
+            <div v-else-if="loadCompolete" style="height: 100%">
                 <div v-if="nodeLoading" class="no-result">
                     <p class="bold">{{$t('application.applyWaiting')}}</p>
                     <div class="node-apply">
@@ -40,7 +40,7 @@
                                 <span v-if="quitPending" class="node2">{{node.verNode?$t('application.status3'):node.ranking>100?(node.ranking>100?$t('application.status4'):$t('application.status5')):''}}</span>
                                 <span v-else-if="nodeState" :class="nodeState==1?'danger':'node2'">{{nodeState==1?$t('application.status1'):nodeState==2?$t('application.status2'):''}}</span>
                                 <span v-else-if="node.verNode" class="node1">{{$t('application.status3')}}</span>
-                                <span v-else :class="[node.ranking>100?'node3':'node2']">{{node.ranking>100?$t('application.status4'):$t('application.status5')}}</span>
+                                <span v-else :class="[nodeAllowed?'node3':'node2']">{{nodeAllowed?$t('application.status5'):$t('application.status4')}}</span>
                             </p>
                         </div>
                         <div>
@@ -142,6 +142,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
 
         <!--质押申请确认-->
@@ -214,6 +215,7 @@
     import keyManager from '@/services/key-manager';
     import contractService from '@/services/contract-servies';
     import { setInterval, clearInterval } from 'timers';
+    import Settings from '@/services/setting';
 
     var fs = require("fs");
     export default {
@@ -249,14 +251,34 @@
                 pendingRedeemStake:0,
                 ticketsCount:0,
                 epoch:0,
-                withdrawInfosTimer:null
+                withdrawInfosTimer:null,
+                loadCompolete:false,
+                nodeAllowed:false
             }
         },
         computed: {
-            ...mapGetters(['contractAddress','lang']),
+            ...mapGetters(['contractAddress','lang','network','chainName']),
             APIConfig:function(){
                 var APIConfig = require('@/config/API-config');
                 return APIConfig.default;
+            },
+            allowed:function(){
+                let cate,filePath;
+                if(this.network.type=='custom'){
+                    cate = this.chainName;
+                }
+                if(cate){
+                    filePath = Settings.userDataPath+'net_'+this.network.type+'/chain/'+cate+'/cbft.json';
+                }else{
+                    filePath = Settings.userDataPath+'net_'+this.network.type+'/data/cbft.json';
+                }
+                let cbftJson = fs.readFileSync(`${filePath}`,'utf8');
+                try{
+                    let cbftObj = JSON.parse(cbftJson);
+                    return cbftObj.ppos.candidate.allowed
+                }catch(e){
+                    return 512
+                }
             }
         },
         mounted(){
@@ -272,6 +294,7 @@
                             let curNodeApply = quitList[0];
                             this.nodeState = 1;
                             this.node = curNodeApply;
+                            this.loadCompolete = true;
                             // this.pendingStake = 0;
                             // this.unboundStake = 0;
                             this.getTicketInfo();
@@ -294,12 +317,13 @@
                             },1000)
                     }else{
                         this.getApplyNodeList().then((n)=>{
-                            console.log('getApplyNodeList---',n,n.pending);
+                            console.log('getApplyNodeList---',n);
                             let curNodeApply={};
                             if(n){
                                 if(n.pending){   //节点质押申请提交中...
                                     this.nodeLoading = true;
                                     this.node = n;
+                                    this.loadCompolete = true;
                                     this.getLastStake('createValidator').then((o)=>{
                                         this.depositApplyProcess = o?o.processWidth:0;
                                     });
@@ -310,8 +334,7 @@
                                 }else if(n.dieOut){   //节点已被淘汰
                                     this.nodeLoading = false;
                                     this.node = n;
-                                    // this.pendingStake = 0;
-                                    // this.unboundStake = 0;
+                                    this.loadCompolete = true;
                                     this.nodeState = 2;
                                     console.log('this.node--2-->',this.node);
                                     this.candidateWithdrawInfos();
@@ -325,6 +348,7 @@
                                     this.node = curNodeApply;
                                     this.getMyNodeDetail(curNodeApply);
                                     this.getRecuceDetail();
+                                    this.loadCompolete = true;
                                     if(this.pendingTradeTimer){
                                         this.pendingTradeTimer = null;
                                     }
@@ -343,6 +367,8 @@
                                         })
                                     },1000)
                                 }
+                            }else{
+                                this.loadCompolete = true;
                             }
                         });
                     }
@@ -353,7 +379,8 @@
                 contractService.platONCall(contractService.getABI(3),contractService.voteContractAddress,'GetCandidateTicketIds',this.node.Owner,[this.node.CandidateId]).then((ticketIds)=>{
                     console.log('ticketIds---->',ticketIds);
                     this.ticketsCount = JSON.parse(ticketIds).length;
-                })
+                    this.nodeAllowed = this.ticketsCount<this.allowed?false:true;
+                });
                 contractService.platONCall(contractService.getABI(3),contractService.voteContractAddress,'GetCandidateEpoch',this.node.Owner,[this.node.CandidateId]).then((epoch)=>{
                     console.log('epoch----',epoch);
                     this.epoch = epoch=='0x'?0:epoch;

@@ -53,6 +53,9 @@
                                     <el-button :class="[lang=='zh-cn'?'letterSpace':'']" type="primary" @click="confirm(item,1)">{{$t('trade.confirm')}}</el-button>
                                     <el-button :class="[lang=='zh-cn'?'letterSpace':'']" @click="confirm(item,2)">{{$t('trade.reject')}}</el-button>
                                 </span>
+                                <span v-else-if="item.confirmationsOwners && (item.confirmationsOwners.length==item.required)" class="tc">
+                                    {{$t('trade.pending')}}
+                                </span>
                                 <span v-else  class="tc">
                                     {{$t('trade.toBeSigned')}}
                                 </span>
@@ -111,11 +114,14 @@
                             </span>
                             <span v-else class="state-pending">{{$t('trade.pending')}}</span>
                         </span>
-                            <span v-else>
+                        <span v-else>
                             <span v-if="item.pending==1">
                                 <span v-if="item.availOwners&&item.availOwners.length>0">
                                     <el-button :class="[lang=='zh-cn'?'letterSpace':'']" type="primary" @click="confirm(item,1)">{{$t('trade.confirm')}}</el-button>
                                     <el-button :class="[lang=='zh-cn'?'letterSpace':'']" @click="confirm(item,2)">{{$t('trade.reject')}}</el-button>
+                                </span>
+                                <span v-else-if="item.confirmationsOwners && (item.confirmationsOwners.length==item.required)" class="tc">
+                                    {{$t('trade.pending')}}
                                 </span>
                                 <span v-else class="tc">
                                     {{$t('trade.toBeSigned')}}
@@ -226,7 +232,7 @@
             this.init();
         },
         methods:{
-            ...mapActions(['getShareByAddress','isAtLocal','getOrdByAddress','getCurTradeList','getSharedOwner','getOwnerAccountByAddress','updatetradeProcess','getAvailOwner','saveTractRecord','updatePageLoading']),
+            ...mapActions(['getShareByAddress','isAtLocal','getOrdByAddress','getCurTradeList','getSharedOwner','getOwnerAccountByAddress','updatetradeProcess','getAvailOwner','saveTractRecord','updatePageLoading','getPendingExecution']),
             init(){
                 this.updatePageLoading(true);
                 this.getCurTradeList({
@@ -437,24 +443,39 @@
                 this.handle = num;
                 this.trade = trade;
                 this.submitting = false;
+                this.availOwners=[];
                 if(trade.availOwners.length>0){
-                    this.availOwners = trade.availOwners;
-                    this.availOwners.forEach((item,index)=>{
-                        contractService.web3.eth.getBalance(item.address,(err,data)=>{
-                            if(err) return null;
-                            item.balance=contractService.web3.fromWei(data,"ether").toString(10)-0;
-                            this.$set(this.availOwners,index,item)
-                        });
+                    this.getPendingExecution(trade.from).then((pendingTxs)=>{
+                        console.log('pendingTxs--->',pendingTxs);
+                        if(pendingTxs){
+                            console.log('come in');
+                            trade.availOwners = trade.availOwners.filter((avail)=>{
+                                return avail.address!==pendingTxs.from;
+                            });
+                            console.log(' trade.availOwners', trade.availOwners);
+                        }
+                        if(trade.availOwners.length>0){
+                            this.availOwners = trade.availOwners;
+                            this.availOwners.forEach((item,index)=>{
+                                contractService.web3.eth.getBalance(item.address,(err,data)=>{
+                                    if(err) return null;
+                                    item.balance=contractService.web3.fromWei(data,"ether").toString(10)-0;
+                                    this.$set(this.availOwners,index,item)
+                                });
+                            });
+                            if(this.availOwners.length>1){
+                                this.showSelOwners = true;
+                            }else if(this.availOwners.length==1){
+                                this.owner = this.availOwners[0];
+                                this.showSelOwners = false;
+                                this.getGas(null,null,()=>{
+                                    this.showConfirmModal = true;
+                                });
+                            }
+                        }else{
+                            this.availOwners=[];
+                        }
                     });
-                    if(this.availOwners.length>1){
-                        this.showSelOwners = true;
-                    }else if(this.availOwners.length==1){
-                        this.owner = this.availOwners[0];
-                        this.showSelOwners = false;
-                        this.getGas(null,null,()=>{
-                            this.showConfirmModal = true;
-                        });
-                    }
                 }
             },
             selOwner(owner){
@@ -505,9 +526,11 @@
                                     state:0
                                 };
                                 this.saveTractRecord(tradeObj).then(()=>{
-                                    this.showConfirmModal = false;
-                                    this.submitting = false;
                                     this.init();
+                                    setTimeout(()=>{
+                                        this.showConfirmModal = false;
+                                        this.submitting = false;
+                                    },1000);
                                 });
                             }).catch((err)=>{
                                 this.submitting = false;
